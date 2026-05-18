@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Asymmetrical Democratic Equilibrium — Research Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #0a0906;
+    --bg2:       #100e0b;
+    --bg3:       #161310;
+    --gold:      #c9a84c;
+    --gold-dim:  #8a6e2f;
+    --amber:     #e07b2f;
+    --cream:     #e8dfc8;
+    --muted:     #7a7060;
+    --border:    rgba(201,168,76,0.18);
+    --glow:      rgba(201,168,76,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: .45;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 40%, rgba(201,168,76,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(224,123,47,0.05) 0%, transparent 60%);
+  }
+
+  .hero-inner { position: relative; z-index: 1; max-width: 860px; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 0.35em 1em;
+    border-radius: 2px;
+    margin-bottom: 2.2rem;
+    background: rgba(201,168,76,0.04);
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+    animation: fadeUp 1s ease 0.15s both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    margin-top: 1.6rem;
+    font-size: 1.15rem;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 600px;
+    margin-left: auto; margin-right: auto;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .divider-ornament {
+    display: flex; align-items: center; gap: 1.2rem;
+    margin: 3rem auto 0;
+    max-width: 340px;
+    animation: fadeUp 1s ease 0.45s both;
+  }
+  .divider-ornament span { flex: 1; height: 1px; background: var(--border); }
+  .divider-ornament svg { flex-shrink: 0; }
+
+  /* ── Layout ── */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── Section intro ── */
+  .intro {
+    padding: 5rem 0 3rem;
+    text-align: center;
+  }
+  .intro p {
+    font-size: 1.18rem;
+    color: #b5a98a;
+    max-width: 720px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* ── Cards ── */
+  .cards { padding: 2rem 0 6rem; }
+
+  .card {
+    position: relative;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2.8rem 3rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.35s, transform 0.35s;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--amber) 100%);
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+
+  .card:hover {
+    border-color: rgba(201,168,76,0.4);
+    transform: translateX(4px);
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    font-style: italic;
+    color: rgba(201,168,76,0.08);
+    position: absolute;
+    top: 1rem; right: 2rem;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.6rem;
+  }
+
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+    line-height: 1.25;
+  }
+
+  .card .concept-title {
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Pro', serif;
+  }
+
+  .card p { color: #b0a48a; font-weight: 300; }
+
+  .card .research-angle {
+    margin-top: 1.4rem;
+    padding: 1rem 1.2rem;
+    background: rgba(201,168,76,0.04);
+    border-left: 2px solid var(--gold-dim);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .card .research-angle strong {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .card .research-angle p {
+    font-size: 0.94rem;
+    color: #8a806a;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* ── Helix section ── */
+  .helix-section {
+    padding: 4rem 0 6rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .helix-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+
+  .helix-section h3 em { color: var(--gold); font-style: italic; }
+
+  .helix-body {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    color: #b0a48a;
+    font-weight: 300;
+    font-size: 1.07rem;
+  }
+
+  .focus-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 2.8rem;
+  }
+
+  .focus-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.6rem 1.8rem;
+    text-align: left;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: default;
+  }
+
+  .focus-item:hover {
+    border-color: rgba(201,168,76,0.5);
+    background: rgba(201,168,76,0.03);
+  }
+
+  .focus-item .fi-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .focus-item h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .focus-item p {
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  @media(max-width:600px) {
+    .focus-grid { grid-template-columns: 1fr; }
+    .card { padding: 2rem 1.6rem; }
+  }
+
+  /* ── Footer ── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .footer-ornament {
+    display: flex; align-items: center; gap: 1rem;
+    max-width: 400px; margin: 0 auto 2rem;
+  }
+  .footer-ornament span { flex: 1; height: 1px; background: var(--border); }
+
+  footer .byline {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  footer .role {
+    margin-top: 0.3rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  footer .copy {
+    margin-top: 1.6rem;
+    font-size: 0.8rem;
+    color: rgba(122,112,96,0.5);
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="tag">Research Framework · Political Science &amp; Comparative Religion</div>
+    <h1>Asymmetrical<br/><em>Democratic Equilibrium</em></h1>
+    <p class="hero-sub">
+      Mapping structural asymmetries between decentralised indigenous religious systems
+      and centralised Abrahamic systems within the modern democratic nation-state.
+    </p>
+    <div class="divider-ornament">
+      <span></span>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="3.5" stroke="#c9a84c" stroke-width="1"/>
+        <path d="M9 1v3M9 14v3M1 9h3M14 9h3" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INTRO ═══ -->
+<section class="intro container reveal">
+  <p>
+    A multi-layered analytical framework spanning political science, sociology, history,
+    and religious philosophy — translating observable asymmetries into rigorous academic
+    variables to expose the <em>systemic rules of the game</em> that make
+    certain democratic outcomes structurally inevitable.
+  </p>
+</section>
+
+<!-- ═══ CARDS ═══ -->
+<section class="cards container">
+
+  <!-- 1 -->
+  <article class="card reveal">
+    <div class="card-num">01</div>
+    <div class="card-label">Pillar One · Political Theory</div>
+    <h2>Power Asymmetry: Street Veto vs. Institutional Reliance</h2>
+    <div class="concept-title">The Street Veto vs. The Institutional Reflex</div>
+    <p>
+      Decentralised systems — such as Sanatan Dharma — lack a singular command structure,
+      making collective, rapid mobilisation difficult unless a threshold of extreme
+      provocation is reached. Highly centralised or community-centric structures possess
+      pre-existing networks (such as weekly congregations) that dramatically lower the
+      <em>transaction cost of mobilisation</em>.
+    </p>
+    <div class="research-angle">
+      <strong>Research Angle</strong>
+      <p>
+        Analyse how modern democracies struggle to balance the "Rule of Law" with the
+        "Rule of Mobilisation," and how political actors naturally gravitate toward
+        predictable, highly mobilised interest groups to maintain stability.
+      </p>
+    </div>
+  </article>
+
+  <!-- 2 -->
+  <article class="card reveal">
+    <div class="card-num">02</div>
+    <div class="card-label">Pillar Two · Public Choice Theory</div>
+    <h2>Electoral Dynamics: Consolidated vs. Fragmented Blocs</h2>
+    <div class="concept-title">Transaction Cost of Political Bargaining</div>
+    <p>
+      When a majority fragments along sub-identities — caste, language, region — a
+      smaller, highly consolidated minority automatically gains disproportionate leverage
+      in first-past-the-post electoral systems. Negotiating with a consolidated bloc
+      requires engaging with fewer key influencers or addressing a specific, unified
+      set of collective anxieties.
+    </p>
+    <div class="research-angle">
+      <strong>Research Angle</strong>
+      <p>
+        Document the mathematical efficiency of vote banks. Formalise how minority
+        consolidation ratios translate into outsized political influence relative to
+        demographic weight in fragmented electoral landscapes.
+      </p>
+    </div>
+  </article>
+
+  <!-- 3 -->
+  <article class="card reveal">
+    <div class="card-num">03</div>
+    <div class="card-label">Pillar Three · Moral Philosophy</div>
+    <h2>Philosophical Foundations: Dharma vs. Dogma</h2>
+    <div class="concept-title">Internalized Ethics vs. Externalized Codification</div>
+    <p>
+      Sanatan Dharma operates on <em>contextual, experiential duty</em> — it permits
+      internal subversion, atheism, and intense self-criticism, with no single text or
+      supreme human authority capable of excommunication. Abrahamic systems generally
+      operate on divine command, explicit moral codes, and clear boundaries of who is
+      "in" and who is "out."
+    </p>
+    <div class="research-angle">
+      <strong>Research Angle</strong>
+      <p>
+        Explore how an open-source, self-critical system reacts when placed in direct
+        competition with a closed, guarded one — and why the open system is structurally
+        easier to parody, delegitimise, and erode from within.
+      </p>
+    </div>
+  </article>
+
+  <!-- 4 -->
+  <article class="card reveal">
+    <div class="card-num">04</div>
+    <div class="card-label">Pillar Four · Colonial History</div>
+    <h2>Institutional Continuity: The Gurukul vs. The Madarsa</h2>
+    <div class="concept-title">Decentralised Vulnerability vs. Centralised Resilience</div>
+    <p>
+      The Gurukul system depended on state patronage and land grants. When colonial
+      regimes dismantled indigenous economic bases, Gurukuls collapsed — they had no
+      independent, community-funded global model. Madarsas, by contrast, were built
+      on independent community trusts and a standardised cross-border curriculum
+      structurally insulated from local political survival.
+    </p>
+    <div class="research-angle">
+      <strong>Research Angle</strong>
+      <p>
+        A comparative study of the economic and structural resilience of indigenous
+        versus transnational religious educational systems under hostile colonial regimes.
+      </p>
+    </div>
+  </article>
+
+  <!-- 5 -->
+  <article class="card reveal">
+    <div class="card-num">05</div>
+    <div class="card-label">Pillar Five · Anthropology</div>
+    <h2>Psychological Conditioning: Ritual-Induced Cohesion</h2>
+    <div class="concept-title">High-Cost Communal Ritual as Social Adhesive</div>
+    <p>
+      High-cost, high-visibility communal rituals — whether fasts, mass congregations,
+      or sacrificial observances — build powerful in-group solidarity and out-group
+      differentiation from an early age. Low-investment, highly individualised spiritual
+      practices generate less collective psychological resilience and reduced willingness
+      to defend group boundaries.
+    </p>
+    <div class="research-angle">
+      <strong>Research Angle</strong>
+      <p>
+        Measure how the investment level and communal visibility of religious rituals
+        correlate with a group's collective mobilisation capacity and boundary-defence
+        behaviour in multicultural democratic contexts.
+      </p>
+    </div>
+  </article>
+
+</section>
+
+<!-- ═══ HELIX ═══ -->
+<section class="helix-section">
+  <div class="container">
+    <h3 class="reveal">Designing the <em>Helix</em></h3>
+    <div class="helix-body reveal">
+      <p>
+        The goal of this framework is to move beyond blaming specific actors — politicians,
+        ideologues, or particular communities — and instead expose the <strong>systemic rules
+        of the game</strong> that render these outcomes structurally inevitable.
+      </p>
+      <p style="margin-top:1rem;">
+        Politicians are rational actors maximising votes; institutions are rational actors
+        maximising control. They exploit structural asymmetries that already exist between
+        the theological, institutional, and psychological architectures of different communities.
+        Understanding these mechanics is the first step toward genuine democratic equilibrium.
+      </p>
+    </div>
+
+    <div class="focus-grid reveal">
+      <div class="focus-item">
+        <div class="fi-icon">⚖️</div>
+        <h4>The Math of Electoral Asymmetry</h4>
+        <p>Formalising how consolidation ratios yield disproportionate political leverage in FPTP systems.</p>
+      </div>
+      <div class="focus-item">
+        <div class="fi-icon">🔓</div>
+        <h4>Open-Source Religion Under Pressure</h4>
+        <p>Why permissive, self-critical theological systems are structurally easier to delegitimise in adversarial public discourse.</p>
+      </div>
+      <div class="focus-item">
+        <div class="fi-icon">🏛️</div>
+        <h4>Institutional Memory &amp; Resilience</h4>
+        <p>Economic models of religious institution survival across regime change and colonial disruption.</p>
+      </div>
+      <div class="focus-item">
+        <div class="fi-icon">🔁</div>
+        <h4>Ritual Investment &amp; Mobilisation</h4>
+        <p>Anthropological metrics connecting communal ritual cost to collective action capacity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-ornament">
+    <span></span>
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 2 L13.5 8.5 L20.5 9 L15.5 13.5 L17 20.5 L11 17 L5 20.5 L6.5 13.5 L1.5 9 L8.5 8.5 Z" stroke="#c9a84c" stroke-width="0.8" fill="rgba(201,168,76,0.07)"/>
+    </svg>
+    <span></span>
+  </div>
+  <p class="byline">Kallol Chakrabarti</p>
+  <p class="role">Global Independent Researcher</p>
+  <p class="copy">Asymmetrical Democratic Equilibrium Framework &nbsp;·&nbsp; Original Concept</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
